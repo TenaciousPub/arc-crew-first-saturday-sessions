@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://TenaciousPub.github.io/arc-crew-first-saturday-sessions/sitemap.xml
