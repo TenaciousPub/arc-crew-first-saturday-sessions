@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- BASE:START (managed by Coding Agent — do not edit) -->
+<base href="/arc-crew-first-saturday-sessions/">
+<!-- BASE:END -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+
+
+<!-- SEO Meta Tags -->
+<title>ARC Crew — First Saturday Hangouts</title>
+<meta property="og:title" content="ARC Crew — First Saturday Hangouts" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ARC Crew — First Saturday Hangouts" />
+<!-- End SEO Meta Tags -->
+
+<script data-field-replace>
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var fields={};
+  var paramMap={
+    'first_name':'firstName','last_name':'lastName','full_name':'fullName',
+    'email':'email','phone':'phone','company':'company',
+    'city':'city','state':'state','country':'country'
+  };
+  var skipTags={'SCRIPT':1,'STYLE':1,'NOSCRIPT':1,'TEXTAREA':1,'CODE':1,'PRE':1};
+  var hasUrlFields=false;
+  for(var p in paramMap){
+    var v=params.get(p);
+    if(v){fields[paramMap[p]]=v;hasUrlFields=true;}
+  }
+  var contactId=params.get('contact_id');
+  function esc(s){
+    if(!s)return s;
+    var d=document.createElement('div');
+    d.appendChild(document.createTextNode(s));
+    return d.innerHTML;
+  }
+  function doReplace(data){
+    var r={};
+    r['{{full_name}}']=esc(((data.firstName||'')+' '+(data.lastName||'')).trim()||((data.fullName||data.name)||''));
+    r['{{first_name}}']=esc(data.firstName||(data.name?data.name.split(' ')[0]:'')||'');
+    r['{{last_name}}']=esc(data.lastName||(data.name&&data.name.indexOf(' ')>-1?data.name.substring(data.name.indexOf(' ')+1):'')||'');
+    r['{{email}}']=esc(data.email||'');
+    r['{{phone}}']=esc(data.phone||'');
+    r['{{company}}']=esc(data.company||'');
+    r['{{city}}']=esc(data.city||'');
+    r['{{state}}']=esc(data.state||'');
+    r['{{country}}']=esc(data.country||'');
+    r['{{date}}']=new Date().toLocaleDateString();
+    r['{{time}}']=new Date().toLocaleTimeString();
+    r['{{location}}']=[data.city,data.state,data.country].filter(Boolean).join(', ');
+    r['{{tracking_id}}']=esc(data.trackingId||'');
+    r['{{lastClickedProduct}}']=esc(data.lastClickedProduct||'');
+    r['{{lastProductClickDate}}']=esc(data.lastProductClickDate||'');
+    r['{{lastClickedProductPrice}}']=esc(data.lastClickedProductPrice||'');
+    r['{{lastClickedProductURL}}']=esc(data.lastClickedProductURL||'');
+    r['{{productsClickedCount}}']=esc(data.productsClickedCount||'0');
+    r['{{ip_address}}']=esc(data.ipAddress||'');
+    r['{{ip}}']=esc(data.ipAddress||'');
+    if(data.customFields){
+      for(var k in data.customFields){
+        r['{{'+k+'}}']=esc(String(data.customFields[k]||''));
+      }
+    }
+    params.forEach(function(v,k){
+      if(!paramMap[k]&&k!=='contact_id'&&k!=='page_id'&&k.indexOf('utm_')!==0){
+        r['{{'+k+'}}']=esc(v);
+      }
+    });
+    var hasValues=false;
+    for(var key in r){if(r[key]){hasValues=true;break;}}
+    if(!hasValues)return;
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{
+      acceptNode:function(n){
+        var p=n.parentNode;
+        if(p&&skipTags[p.nodeName])return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var node;
+    while(node=walker.nextNode()){
+      var txt=node.nodeValue;
+      if(txt&&txt.indexOf('{{')>-1){
+        var changed=txt;
+        for(var ph in r){
+          if(r[ph]&&changed.indexOf(ph)>-1){
+            changed=changed.split(ph).join(r[ph]);
+          }
+        }
+        if(changed!==txt)node.nodeValue=changed;
+      }
+    }
+    var attrs=['value','placeholder','content','alt','title'];
+    attrs.forEach(function(attr){
+      var els=document.querySelectorAll('['+attr+'*="{{"]');
+      for(var i=0;i<els.length;i++){
+        var tag=els[i].tagName;
+        if(skipTags[tag])continue;
+        var val=els[i].getAttribute(attr);
+        if(val){
+          var nv=val;
+          for(var ph in r){
+            if(r[ph]&&nv.indexOf(ph)>-1){
+              nv=nv.split(ph).join(r[ph]);
+            }
+          }
+          if(nv!==val)els[i].setAttribute(attr,nv);
+        }
+      }
+    });
+  }
+  function run(){
+    if(contactId){
+      var xhr=new XMLHttpRequest();
+      xhr.open('GET','https://paymegpt.com/api/landing/context/'+encodeURIComponent(contactId)+'?page_id=4024');
+      xhr.onload=function(){
+        if(xhr.status===200){
+          try{
+            var resp=JSON.parse(xhr.responseText);
+            if(resp.success&&resp.contact){
+              var merged=resp.contact;
+              for(var k in fields){merged[k]=fields[k];}
+              doReplace(merged);
+              return;
+            }
+          }catch(e){}
+        }
+        if(hasUrlFields)doReplace(fields);
+      };
+      xhr.onerror=function(){if(hasUrlFields)doReplace(fields);};
+      xhr.send();
+    }else if(hasUrlFields){
+      doReplace(fields);
+    }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',run);}
+  else{run();}
+})();
+</script>
+<script data-payment>
+(function(){
+  var slug='hUMf8nY2Y';
+  var apiBase='https://paymegpt.com';
+  function findEmail(){
+    var ids=['email','emailAddress','buyer-email','buyerEmail','user-email','userEmail','checkout-email','customer-email','contact-email'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value&&el.value.includes('@'))return el.value.trim();}
+    var inputs=document.querySelectorAll('input[type="email"],input[name*="email"],input[placeholder*="email"],input[placeholder*="Email"]');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value&&inputs[j].value.includes('@'))return inputs[j].value.trim();}
+    return '';
+  }
+  function findName(){
+    var ids=['name','fullName','full-name','buyer-name','buyerName','customer-name','userName','user-name'];
+    for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el&&el.value)return el.value.trim();}
+    var inputs=document.querySelectorAll('input[name*="name"]:not([name*="email"]):not([type="email"]),input[placeholder*="name"]:not([placeholder*="email"]):not([type="email"]),input[placeholder*="Name"]:not([type="email"])');
+    for(var j=0;j<inputs.length;j++){if(inputs[j].value)return inputs[j].value.trim();}
+    return '';
+  }
+  var __realProcessPayment=function(a,b,c,d,e){
+    var amountCents,email,productName,productDescription,customerName,quantity;
+    if(a&&typeof a==='object'){
+      amountCents=a.amountCents;email=a.email;productName=a.productName;
+      productDescription=a.productDescription||'';customerName=a.name||'';quantity=a.quantity||1;
+    }else{
+      amountCents=typeof a==='number'?a:0;productName=typeof b==='string'?b:'';
+      productDescription=typeof c==='string'?c:'';email='';customerName='';quantity=1;
+    }
+    if(!email)email=findEmail();
+    if(!customerName)customerName=findName();
+    if(!productName){alert('Product name is required.');return Promise.reject('no_product_name');}
+    if(!amountCents||amountCents<100){alert('Amount must be at least $1.00');return Promise.reject('invalid_amount');}
+    if(!email){alert('Please enter your email address.');return Promise.reject('no_email');}
+    var successBase=window.location.href.split('?')[0];
+    return fetch(apiBase+'/api/landing-pages/public/'+slug+'/payment/checkout',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,name:customerName,amountCents:amountCents,productName:productName,productDescription:productDescription,quantity:quantity,successUrl:successBase+'?payment=success&product='+encodeURIComponent(productName)+'&session_id={CHECKOUT_SESSION_ID}',cancelUrl:successBase+'?payment=cancelled'})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.checkoutUrl){window.location.href=d.checkoutUrl;}
+      else{alert(d.error||'Failed to process payment');throw new Error(d.error);}
+    });
+  };
+  Object.defineProperty(window,'__processPayment',{value:__realProcessPayment,writable:false,configurable:false});
+  document.addEventListener('DOMContentLoaded',function(){
+    var urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('payment')==='success'){
+      var pName=urlParams.get('product')||'your item';
+      var overlay=document.createElement('div');overlay.id='payment-success-overlay';
+      overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999999;font-family:system-ui,-apple-system,sans-serif;';
+      overlay.innerHTML='<div style="background:white;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);"><div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div><h2 style="margin:0 0 12px;font-size:24px;font-weight:700;color:#111827;">Payment Successful!</h2><p style="margin:0 0 24px;color:#6b7280;font-size:16px;">Thank you for purchasing '+pName.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'.</p><button onclick="document.getElementById(\'payment-success-overlay\').remove();window.history.replaceState({},\'\',window.location.pathname);" style="padding:12px 32px;font-size:16px;font-weight:600;background:#16a34a;color:white;border:none;border-radius:8px;cursor:pointer;">Continue</button></div>';
+      document.body.appendChild(overlay);
+    }
+  });
+})();
+</script>  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <img src="https://paymegpt.com/objects/generated-images/51/1778790377183-2480b4279c7995cf.png" alt="ARC Crew Logo" class="logo">
+  <div class="header-text">
+    <h1>ARC Crew</h1>
+    <p>First Saturday Social · Est. ARC Adapted Gym</p>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">🎉 First Saturday Social Crew</div>
+  <h2>Good People, <span>Good Times</span></h2>
+  <p>We met at the ARC adapted gym and kept the crew alive. Every first Saturday we get out together — pizza, movies, bowling, whatever sounds good.</p>
+  <div class="activities">
+    <div class="act-pill">🍕 Pizza</div>
+    <div class="act-pill">🎳 Bowling</div>
+    <div class="act-pill">🎬 Movies</div>
+    <div class="act-pill">🎮 Games</div>
+    <div class="act-pill">🌮 Food runs</div>
+  </div>
+  <div class="next-date">
+    <div class="label">Next Hangout</div>
+    <div class="date" id="next-saturday-display">—</div>
+  </div>
+</div>
+
+<div class="winner-wrap">
+  <div class="winner-banner" id="winner-banner">
+    <div class="winner-placeholder">Loading next outing...</div>
+  </div>
+  <div class="past-link-wrap">
+    <a href="https://paymegpt.com/p/wXT5yb9mSG" class="past-link">View all past outings →</a>
+  </div>
+</div>
+
+<div class="content-wrap">
+  <div class="section-block">
+    <div class="section-title">What Should We Do?</div>
+    <div class="section-sub">One vote per person, per idea. You can switch your vote anytime.</div>
+    <div class="voting-as" id="voting-as" style="display:none">
+      Voting as <span class="name" id="voter-name-display"></span>
+      <button onclick="changeVoter()">Not you?</button>
+    </div>
+    <div id="proposals-list">
+      <div class="spinner-wrap"><div class="spinner"></div><br>Loading ideas...</div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="section-block">
+    <div class="section-title">Drop Your Idea</div>
+    <div class="form-card">
+      <div class="form-row-2">
+        <div>
+          <label for="ProposedBy">Your Name <span class="req">*</span></label>
+          <input type="text" id="ProposedBy" placeholder="e.g. Marcus" maxlength="80">
+        </div>
+        <div>
+          <label for="Category">Type <span class="req">*</span></label>
+          <select id="Category">
+            <option value="">— Pick one —</option>
+            <option value="🍕 Food">🍕 Food</option>
+            <option value="🎳 Bowling">🎳 Bowling</option>
+            <option value="🎬 Movies">🎬 Movies</option>
+            <option value="🎮 Games">🎮 Games</option>
+            <option value="🎵 Live Music">🎵 Live Music</option>
+            <option value="🌳 Outdoors">🌳 Outdoors</option>
+            <option value="🛍️ Shopping">🛍️ Shopping</option>
+            <option value="✨ Other">✨ Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="ProposalTitle">The Idea <span class="req">*</span></label>
+        <input type="text" id="ProposalTitle" placeholder="e.g. Round 1 arcade and pizza after" maxlength="100">
+      </div>
+      <div class="form-row">
+        <label for="Address">Address / Where <span class="opt">(optional)</span></label>
+        <input type="text" id="Address" placeholder="e.g. Capitol Bowl, 900 W Capitol Ave, West Sacramento" maxlength="200">
+      </div>
+      <div class="form-row">
+        <label for="Description">Details</label>
+        <textarea id="Description" placeholder="Why it'd be fun, accessibility notes, anything the crew should know..." maxlength="400"></textarea>
+      </div>
+      <button class="submit-btn" onclick="submitProposal()">Submit Idea 🎉</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>ARC Crew</strong> · First Saturdays · Born at American River College<br>
+  Every member, every voice, every hangout.
+</footer>
+<div id="toast"></div>
+
+<div class="modal-overlay" id="name-modal">
+  <div class="modal">
+    <h3>What's Your Name?</h3>
+    <p>We use your name so each person gets one vote per idea — vote from any device, it still counts as you.</p>
+    <input type="text" id="modal-name-input" placeholder="Your name" maxlength="60" onkeydown="if(event.key==='Enter')confirmVoterName()">
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeNameModal()">Cancel</button>
+      <button class="modal-confirm" onclick="confirmVoterName()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUBMIT_WEBHOOK   = 'https://paymegpt.com/api/webhooks/flow/3050/ae5819c5a07ebfb2b17fb4ad35a7865a4d68c98f75a0c94c8e44e89849fcd641';
+  const VOTE_WEBHOOK     = 'https://paymegpt.com/api/webhooks/flow/3062/bc65b167a5980b1bf9ff517db7b8b3b5760c4ee5515a1530057b5491dda1c624';
+  const COMMENT_WEBHOOK  = 'https://paymegpt.com/api/webhooks/flow/3131/0e4806a6ee64aaee64e6dd555caf1a2eb1623b4f4c9683db49858187a27302f9';
+  const VOTES_DATA_URL   = 'https://paymegpt.com/api/public/landing-pages/4042/sheet-data';
+  const COMMENTS_DATA_URL= 'https://paymegpt.com/api/public/landing-pages/4116/sheet-data';
+  const WINNER_DATA_URL  = 'https://paymegpt.com/api/public/landing-pages/4025/sheet-data';
+
+  // ── Next first Saturday ──
+  function getNextFirstSaturday() {
+    var now = new Date(), d = new Date(now.getFullYear(), now.getMonth(), 1);
+    while (d.getDay() !== 6) d.setDate(d.getDate() + 1);
+    if (d <= now) { d.setMonth(d.getMonth() + 1, 1); while (d.getDay() !== 6) d.setDate(d.getDate() + 1); }
+    return d;
+  }
+  document.getElementById('next-saturday-display').textContent =
+    getNextFirstSaturday().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+  // ── Toast ──
+  var toastTimer;
+  function showToast(msg, type) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.className = (type||'success') + ' show';
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3600);
+  }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function mapsUrl(addr){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr); }
+
+  // ── Date display (timezone-safe) ──
+  function formatDate(s){
+    if (!s || !String(s).trim()) return '';
+    var parts = String(s).split('T')[0].split('-');
+    if (parts.length === 3) {
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var m = parseInt(parts[1],10) - 1;
+      var d = parseInt(parts[2],10);
+      if (m >= 0 && m < 12 && d > 0) return months[m] + ' ' + d;
+    }
+    return '';
+  }
+  function formatDateTime(ts){
+    if (!ts) return '';
+    var d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' +
+           d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  }
+
+  // ── Voter identity ──
+  function getVoterName(){ try { return localStorage.getItem('arc_voter_name') || ''; } catch(e){ return ''; } }
+  function setVoterName(n){ try { localStorage.setItem('arc_voter_name', n); } catch(e){} }
+  function voterIdFromName(n){ return String(n||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+
+  function refreshVotingAs(){
+    var name = getVoterName();
+    var bar = document.getElementById('voting-as');
+    if (name) { document.getElementById('voter-name-display').textContent = name; bar.style.display = 'flex'; }
+    else { bar.style.display = 'none'; }
+  }
+  function changeVoter(){ openNameModal(null); }
+
+  var pendingVote = null;
+  var pendingComment = null; // {rowId} — comment queued waiting for name
+  function openNameModal(queuedVote, queuedComment){
+    pendingVote = queuedVote || null;
+    pendingComment = queuedComment || null;
+    var input = document.getElementById('modal-name-input');
+    input.value = getVoterName();
+    document.getElementById('name-modal').classList.add('show');
+    setTimeout(function(){ input.focus(); }, 50);
+  }
+  function closeNameModal(){ document.getElementById('name-modal').classList.remove('show'); pendingVote = null; pendingComment = null; }
+  function confirmVoterName(){
+    var name = (document.getElementById('modal-name-input').value || '').trim();
+    if (!name) { showToast('⚠️ Enter a name', 'error'); return; }
+    setVoterName(name); refreshVotingAs();
+    document.getElementById('name-modal').classList.remove('show');
+    var qv = pendingVote, qc = pendingComment;
+    pendingVote = null; pendingComment = null;
+    if (qv) castVote(qv.rowId, qv.direction);
+    if (qc) focusCommentInput(qc.rowId);
+  }
+
+  // ── State ──
+  var proposalsCache = [];
+  var voteRows = [];
+  var commentRows = [];
+
+  async function loadAll(){
+    await Promise.all([loadVotes(), loadComments(), loadProposalsRaw()]);
+    renderProposals();
+    loadWinner();
+  }
+
+  async function loadVotes(){
+    try {
+      var res = await fetch(VOTES_DATA_URL + '?t=' + Date.now());
+      if (!res.ok) throw new Error(res.status);
+      var json = await res.json();
+      voteRows = Array.isArray(json) ? json : (json.data || json.rows || []);
+    } catch(e){ voteRows = []; }
+  }
+
+  async function loadComments(){
+    try {
+      var res = await fetch(COMMENTS_DATA_URL + '?t=' + Date.now());
+      if (!res.ok) throw new Error(res.status);
+      var json = await res.json();
+      commentRows = Array.isArray(json) ? json : (json.data || json.rows || []);
+    } catch(e){ commentRows = []; }
+  }
+
+  async function loadProposalsRaw(){
+    var metaEl = document.querySelector('meta[name="sheet-data-url"]');
+    if (!metaEl) { proposalsCache = []; return; }
+    try {
+      var res = await fetch(metaEl.content + '?t=' + Date.now());
+      if (!res.ok) throw new Error(res.status);
+      var json = await res.json();
+      var rows = Array.isArray(json) ? json : (json.data || json.rows || []);
+      var merged = new Map();
+      rows.forEach(function(r){
+        var key = String(r.RowID || '');
+        if (!key || key === 'TEST-001' || key.indexOf('TRIGGER-') === 0) return;
+        var m = merged.get(key);
+        if (!m) { m = {RowID:key,ProposalTitle:'',Category:'',ProposedBy:'',Description:'',Address:'',SubmittedDate:''}; merged.set(key, m); }
+        if (!m.ProposalTitle && r.ProposalTitle) m.ProposalTitle = String(r.ProposalTitle);
+        if (!m.Category && r.Category) m.Category = String(r.Category);
+        if (!m.ProposedBy && r.ProposedBy) m.ProposedBy = String(r.ProposedBy);
+        if (!m.Description && r.Description) m.Description = String(r.Description);
+        if (!m.Address && r.Address) m.Address = String(r.Address);
+        if (!m.SubmittedDate && r.SubmittedDate) m.SubmittedDate = String(r.SubmittedDate);
+      });
+      proposalsCache = Array.from(merged.values()).filter(function(m){ return m.ProposalTitle && m.ProposalTitle.trim(); });
+    } catch(e){ proposalsCache = []; }
+  }
+
+  // ── Vote tally ──
+  function tallyFor(rowId){
+    var byVoter = new Map();
+    voteRows.forEach(function(v){
+      if (String(v.RowID||'') !== String(rowId)) return;
+      var vid = String(v.VoterID||'').trim(); if (!vid) return;
+      var dir = String(v.Direction||'').trim().toLowerCase();
+      if (dir !== 'up' && dir !== 'down') return;
+      var ts = String(v.Timestamp||'');
+      var ex = byVoter.get(vid);
+      if (!ex || ts >= ex.ts) byVoter.set(vid, {direction:dir, ts:ts});
+    });
+    var up = 0, down = 0;
+    byVoter.forEach(function(r){ if (r.direction==='up') up++; else down++; });
+    return {up:up, down:down, net:up-down, byVoter:byVoter};
+  }
+  function myVoteFor(rowId){
+    var vid = voterIdFromName(getVoterName()); if (!vid) return null;
+    var rec = tallyFor(rowId).byVoter.get(vid);
+    return rec ? rec.direction : null;
+  }
+
+  // ── Comments for a proposal ──
+  function commentsFor(rowId){
+    return commentRows
+      .filter(function(c){ return String(c.RowID||'') === String(rowId) && c.Comment && String(c.Comment).trim(); })
+      .filter(function(c){ return c.CommentID !== 'TEST-CMT-001'; })
+      .sort(function(a,b){ return String(a.Timestamp||'') < String(b.Timestamp||'') ? -1 : 1; });
+  }
+
+  // ── Render all proposals ──
+  function renderProposals(){
+    var list = document.getElementById('proposals-list');
+    if (!proposalsCache.length) {
+      list.innerHTML = '<div class="empty-state"><div class="big-icon">💡</div>No ideas yet — drop the first one below!</div>';
+      return;
+    }
+    var withTally = proposalsCache.map(function(p){
+      var t = tallyFor(p.RowID);
+      return {p:p, up:t.up, down:t.down, net:t.net};
+    }).sort(function(a,b){ return b.net - a.net; });
+
+    // Remember which panels are open
+    var openPanels = new Set();
+    list.querySelectorAll('.comments-panel.open').forEach(function(el){
+      openPanels.add(el.dataset.rowid);
+    });
+
+    list.innerHTML = '';
+    withTally.forEach(function(item, i){
+      var p = item.p;
+      var rowId = String(p.RowID);
+      var safeId = rowId.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      var mine = myVoteFor(rowId);
+      var date = formatDate(p.SubmittedDate);
+      var comments = commentsFor(rowId);
+      var commentCount = comments.length;
+      var panelOpen = openPanels.has(rowId);
+
+      var addrHtml = '';
+      if (p.Address && p.Address.trim()) {
+        addrHtml = '<div class="card-address"><span>📍</span>' +
+          '<a href="' + mapsUrl(p.Address) + '" target="_blank" rel="noopener">' + esc(p.Address) + '</a></div>';
+      }
+
+      // Build comments HTML
+      var commentsHtml = '';
+      if (commentCount > 0) {
+        commentsHtml += '<div class="comments-list">';
+        comments.forEach(function(c){
+          commentsHtml +=
+            '<div class="comment-item">' +
+              '<div class="comment-header">' +
+                '<span class="comment-name">' + esc(c.VoterName||'Anonymous') + '</span>' +
+                '<span class="comment-time">' + formatDateTime(c.Timestamp) + '</span>' +
+              '</div>' +
+              '<div class="comment-text">' + esc(c.Comment) + '</div>' +
+            '</div>';
+        });
+        commentsHtml += '</div>';
+      } else {
+        commentsHtml += '<div class="no-comments">No comments yet — be the first!</div>';
+      }
+      commentsHtml +=
+        '<div class="comment-input-row">' +
+          '<textarea class="comment-input" id="cinput-' + esc(rowId) + '" placeholder="Add a comment..." maxlength="300" rows="1" ' +
+            'onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();postComment(\'' + safeId + '\')}" ' +
+            'oninput="autoResize(this)"></textarea>' +
+          '<button class="comment-post-btn" onclick="postComment(\'' + safeId + '\')">Post</button>' +
+        '</div>';
+
+      var card = document.createElement('div');
+      card.className = 'proposal-card';
+      card.style.animationDelay = (i*0.05) + 's';
+      card.innerHTML =
+        '<div class="card-body">' +
+          '<div class="card-top">' +
+            '<h4>' + esc(p.ProposalTitle) + '</h4>' +
+            (p.Category ? '<span class="cat-tag">' + esc(p.Category) + '</span>' : '') +
+          '</div>' +
+          (p.Description ? '<p class="card-desc">' + esc(p.Description) + '</p>' : '') +
+          addrHtml +
+          '<div class="card-bottom">' +
+            '<div class="card-meta"><span class="by">— ' + esc(p.ProposedBy||'Anonymous') + '</span>' + (date ? '· '+date : '') + '</div>' +
+            '<div class="card-actions">' +
+              '<button class="comment-toggle' + (commentCount > 0 ? ' has-comments' : '') + '" onclick="toggleComments(\'' + safeId + '\')">' +
+                '💬 <span id="ccount-' + esc(rowId) + '">' + commentCount + '</span>' +
+              '</button>' +
+              '<div class="vote-btns">' +
+                '<button class="vote-btn up' + (mine==='up'?' active':'') + '" onclick="castVote(\'' + safeId + '\',\'up\')">👍 <span>' + item.up + '</span></button>' +
+                '<span class="net-score' + (item.net>0?' positive':item.net<0?' negative':'') + '">' + item.net + '</span>' +
+                '<button class="vote-btn down' + (mine==='down'?' active':'') + '" onclick="castVote(\'' + safeId + '\',\'down\')">👎 <span>' + item.down + '</span></button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="comments-panel' + (panelOpen ? ' open' : '') + '" id="cpanel-' + esc(rowId) + '" data-rowid="' + esc(rowId) + '">' +
+          commentsHtml +
+        '</div>';
+      list.appendChild(card);
+    });
+  }
+
+  // ── Toggle comments panel ──
+  function toggleComments(rowId){
+    var panel = document.getElementById('cpanel-' + rowId);
+    if (!panel) return;
+    var isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open');
+    if (!isOpen) {
+      // Focus the input after animation
+      setTimeout(function(){
+        var inp = document.getElementById('cinput-' + rowId);
+        if (inp) inp.focus();
+      }, 320);
+    }
+  }
+
+  // ── Focus comment input (called after name entry) ──
+  function focusCommentInput(rowId){
+    var panel = document.getElementById('cpanel-' + rowId);
+    if (panel && !panel.classList.contains('open')) panel.classList.add('open');
+    setTimeout(function(){
+      var inp = document.getElementById('cinput-' + rowId);
+      if (inp) inp.focus();
+    }, 320);
+  }
+
+  // ── Auto-resize textarea ──
+  function autoResize(el){
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+  }
+
+  // ── Post comment ──
+  async function postComment(rowId){
+    var name = getVoterName();
+    if (!name) { openNameModal(null, {rowId:rowId}); return; }
+
+    var inp = document.getElementById('cinput-' + rowId);
+    if (!inp) return;
+    var text = (inp.value || '').trim();
+    if (!text) { showToast('⚠️ Write something first', 'error'); return; }
+    if (text.length > 300) { showToast('⚠️ Keep it under 300 chars', 'error'); return; }
+
+    var btn = inp.closest('.comment-input-row').querySelector('.comment-post-btn');
+    if (btn) btn.disabled = true;
+    inp.disabled = true;
+
+    var vid = voterIdFromName(name);
+    var ts = new Date().toISOString();
+    var commentId = 'CMT-' + Date.now();
+
+    // Optimistic update
+    var newRow = {RowID:rowId, CommentID:commentId, VoterName:name, VoterID:vid, Comment:text, Timestamp:ts};
+    commentRows.push(newRow);
+    renderProposals();
+
+    var payload = {
+      contactName: name, contactPhone:'0000000000', contactEmail: vid + '@arccrewmember.local',
+      RowID: rowId, CommentID: commentId, VoterName: name, VoterID: vid, Comment: text, Timestamp: ts
+    };
+    try {
+      var res = await fetch(COMMENT_WEBHOOK, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      showToast(res.ok ? '💬 Comment posted!' : 'Comment saved locally', 'success');
+    } catch(e){ showToast('Comment saved locally', 'success'); }
+  }
+
+  // ── Cast vote ──
+  async function castVote(rowId, direction){
+    var name = getVoterName();
+    if (!name) { openNameModal({rowId:rowId, direction:direction}); return; }
+    var vid = voterIdFromName(name);
+    if (myVoteFor(rowId) === direction) { showToast('You already voted ' + direction + ' on this', 'success'); return; }
+    voteRows.push({ RowID:rowId, Direction:direction, VoterID:vid, VoterName:name, Timestamp:new Date().toISOString() });
+    renderProposals();
+    var payload = {
+      contactName: name, contactPhone:'0000000000', contactEmail: vid + '@arccrewmember.local',
+      RowID: rowId, Direction: direction, VoterID: vid, VoterName: name, Timestamp: new Date().toISOString()
+    };
+    try {
+      var res = await fetch(VOTE_WEBHOOK, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      showToast(res.ok ? (direction==='up' ? '👍 Vote counted!' : '👎 Vote counted!') : 'Vote saved locally', 'success');
+    } catch(e){ showToast('Vote saved locally', 'success'); }
+  }
+
+  // ── Submit proposal ──
+  async function submitProposal(){
+    var name = (document.getElementById('ProposedBy').value||'').trim();
+    var title = (document.getElementById('ProposalTitle').value||'').trim();
+    var desc = (document.getElementById('Description').value||'').trim();
+    var category = (document.getElementById('Category').value||'').trim();
+    var address = (document.getElementById('Address').value||'').trim();
+    if (!name) { showToast('⚠️ Enter your name','error'); return; }
+    if (!title) { showToast('⚠️ Give your idea a title','error'); return; }
+    if (!category) { showToast('⚠️ Pick a type','error'); return; }
+    var btn = document.querySelector('.submit-btn');
+    btn.disabled = true; btn.textContent = 'DROPPING IT...';
+    var today = new Date().toISOString().split('T')[0];
+    var payload = {
+      contactName:name, contactPhone:'0000000000',
+      contactEmail: name.toLowerCase().replace(/[^a-z0-9]/g,'')+'@arccrewmember.local',
+      ProposalTitle:title, Description:desc, Category:category, Address:address,
+      SubmittedDate:today, Votes:'0', Downvotes:'0', RowID:Date.now().toString()
+    };
+    try {
+      var res = await fetch(SUBMIT_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if (res.ok) {
+        showToast('🎉 Idea dropped! Thanks ' + name + '!','success');
+        ['ProposedBy','ProposalTitle','Description','Category','Address'].forEach(function(id){ document.getElementById(id).value=''; });
+        setTimeout(function(){ loadProposalsRaw().then(renderProposals); }, 2800);
+      } else { showToast('❌ Error ' + res.status,'error'); }
+    } catch(e){ showToast('❌ Network error: ' + e.message,'error'); }
+    btn.disabled = false; btn.textContent = 'Submit Idea 🎉';
+  }
+
+  // ── Winner banner ──
+  async function loadWinner(){
+    var banner = document.getElementById('winner-banner');
+    try {
+      var res = await fetch(WINNER_DATA_URL + '?t=' + Date.now());
+      if (!res.ok) throw new Error(res.status);
+      var json = await res.json();
+      var rows = Array.isArray(json) ? json : (json.data || json.rows || []);
+      var valid = rows.filter(function(r){ return r.WinnerTitle && String(r.WinnerTitle).trim(); });
+      if (!valid.length) { banner.innerHTML = '<div class="winner-placeholder">🗳️ Voting open — winner announced the Wednesday before the first Saturday!</div>'; return; }
+      var w = valid[valid.length-1];
+      var net = parseInt(w.NetVotes) || 0;
+      var picked = '';
+      if (w.PickedAt) { var d = new Date(w.PickedAt); if (!isNaN(d.getTime())) picked = d.toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
+      var addrHtml = '';
+      if (w.WinnerAddress && String(w.WinnerAddress).trim()) {
+        addrHtml = '<div class="winner-address"><span>📍</span>' +
+          '<a href="' + mapsUrl(w.WinnerAddress) + '" target="_blank" rel="noopener">' + esc(w.WinnerAddress) + '</a></div>';
+      }
+      banner.innerHTML =
+        '<div class="winner-top"><span class="winner-crown">🏆</span>' +
+        '<span class="winner-label">Next Outing — It\'s Official!</span>' +
+        (picked ? '<span class="winner-subtitle">Locked ' + esc(picked) + '</span>' : '') + '</div>' +
+        '<div class="winner-title">' + esc(w.WinnerTitle) + '</div>' +
+        (w.WinnerDescription ? '<div class="winner-desc">' + esc(w.WinnerDescription) + '</div>' : '') +
+        addrHtml +
+        '<div class="winner-meta">' +
+          (w.WinnerCategory ? '<span class="winner-cat">' + esc(w.WinnerCategory) + '</span>' : '') +
+          (w.WinnerProposedBy ? '<span class="winner-by">proposed by ' + esc(w.WinnerProposedBy) + '</span>' : '') +
+          '<span class="winner-votes">⚡ ' + net + ' net votes</span>' +
+        '</div>';
+    } catch(e){
+      banner.innerHTML = '<div class="winner-placeholder">🗳️ Voting open — winner announced the Wednesday before the first Saturday!</div>';
+    }
+  }
+
+  refreshVotingAs();
+  loadAll();
+</script>
+</body>
+</html>
